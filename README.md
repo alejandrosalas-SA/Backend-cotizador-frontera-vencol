@@ -127,14 +127,16 @@ El backend depende de los siguientes **Stored Procedures**:
 
 ## 📡 Documentación de API (Endpoints)
 
-**Prefijo global:** `/api/v1`
+**Prefijo global:** `/api/`
 
 ### 👤 Autenticación (`/User`)
+Endpoints para gestionar el ciclo de vida de la sesión y credenciales del usuario. Incluye el logueo y el cambio de contraseña.
 
 *   **POST /Login** — Inicio de sesión
 *   **POST /ChangePassword** — Cambio de clave
 
 ### 📋 Maestros (`/Maestros`)
+Endpoints de solo lectura que proveen las listas de entidades de negocio fundamentales (datos maestros). Se utilizan para poblar selectores y opciones en la interfaz de usuario.
 
 *   **GET** `/Sucursales`
 *   **GET** `/DuracionViaje`
@@ -143,6 +145,7 @@ El backend depende de los siguientes **Stored Procedures**:
 *   **GET** `/TasacionEspecial`
 
 ### 💰 Cotización (`/Coberturas`)
+Endpoints para calcular los costos de las diferentes pólizas de seguro. El cliente envía los parámetros de cotización y el backend delega los cálculos complejos a la base de datos, devolviendo el valor de la prima resultante.
 
 *   **POST /Basica**
 *   **POST /Exceso**
@@ -153,7 +156,7 @@ El backend depende de los siguientes **Stored Procedures**:
 
 ## 🔒 Seguridad Implementada
 
-*   **Rate Limiting:** 100 solicitudes / 15 min por IP
+*   **Rate Limiting:** 1000 solicitudes / 15 min por IP
 *   **Sanitización:** Prevención de inyección básica
 *   **Encabezados seguros:** Helmet
 *   **Errores:** En producción no se expone Stack Trace
@@ -162,8 +165,8 @@ El backend depende de los siguientes **Stored Procedures**:
 
 ## 🤝 Flujo de Trabajo (Git)
 
-*   🔴 **main:** Producción (Stable)
-*   🟡 **develop:** Integración y pruebas
+*   🔴 **produccion:** Producción (Stable)
+*   🟡 **dev:** Integración y pruebas
 *   🔵 **feature/\***: Desarrollo local
 
 ***

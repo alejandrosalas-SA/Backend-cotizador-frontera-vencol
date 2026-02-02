@@ -14,7 +14,7 @@ app.use(helmet());
 // 2. SEGURIDAD: Rate Limiting (Protección contra fuerza bruta/DDoS)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // Límite de 100 peticiones por IP
+  max: 1000, // Límite de 1000 peticiones por IP
   message: 'Demasiadas peticiones desde esta IP, por favor intente nuevamente en 15 minutos.'
 });
 app.use(limiter);
