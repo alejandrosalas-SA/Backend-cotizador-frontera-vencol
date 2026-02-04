@@ -1,4 +1,3 @@
-// src/api/routes/coberturas.routes.js
 import { Router } from 'express';
 import coberturasController from '../controllers/coberturas.controller.js';
 

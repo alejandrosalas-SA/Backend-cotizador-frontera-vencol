@@ -11,7 +11,7 @@ export const db = {
     server: process.env.DB_SERVER,
     database: process.env.DB_NAME,
     options: {
-        encrypt: false, // Cambiar a true si usas Azure
+        encrypt: false, 
         trustServerCertificate: true // Solo para desarrollo
     }
 };
