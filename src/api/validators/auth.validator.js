@@ -10,6 +10,7 @@ const loginValidator = [
   body('Password')
     .exists().withMessage('La contraseña es requerida')
     .isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
+
   validateResults // Middleware que verifica las reglas anteriores
 ];
 
@@ -25,7 +26,15 @@ const changePasswordValidator = [
       }
       return true;
     }),
+
   validateResults
 ];
 
-export default { loginValidator, changePasswordValidator };
+const createPasswordValidator = [
+  body('Email').isEmail().withMessage('El email es requerido'),
+  body('Password')
+    .isLength({ min: 8 }).withMessage('La contraseña debe tener al menos 8 caracteres'),
+  validateResults
+];
+
+export default { loginValidator, changePasswordValidator, createPasswordValidator };

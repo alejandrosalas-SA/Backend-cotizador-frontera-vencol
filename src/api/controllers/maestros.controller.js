@@ -2,10 +2,18 @@
 import MaestroServices from '../../services/maestros.service.js';
 
 class MaestrosController {
-  
+
   async getSucursales(req, res, next) {
     try {
       const data = await MaestroServices.getSucursales();
+      res.status(200).json(data);
+    } catch (error) { next(error); }
+  }
+
+  async getSucursalesUsuario(req, res, next) {
+    try {
+      const { codEmp } = req.params;
+      const data = await MaestroServices.getSucursalesUsuario(codEmp);
       res.status(200).json(data);
     } catch (error) { next(error); }
   }
@@ -38,6 +46,7 @@ class MaestrosController {
     } catch (error) { next(error); }
   }
 
+  // REGLA DE NEGOCIO: La "Persona Autorizada para Cotizar" es un Intermediario.
   async getIntermediarios(req, res, next) {
     try {
       const data = await MaestroServices.getIntermediarios();
@@ -45,7 +54,40 @@ class MaestrosController {
     } catch (error) { next(error); }
   }
 
-  //basados en la vista VVEH_MARCA_MODELO
+  async getDefinicionTerminos(req, res, next) {
+    try {
+      const data = await MaestroServices.getDefinicionTerminos();
+      res.status(200).json(data);
+    } catch (error) { next(error); }
+  }
+
+  async getRolesUsuarios(req, res, next) {
+    try {
+      const data = await MaestroServices.getRolesUsuarios();
+      res.status(200).json(data);
+    } catch (error) { next(error); }
+  }
+
+  async getSumasAseguradas(req, res, next) {
+    try {
+      const tipoExceso = req.params.tipoExceso ? parseInt(req.params.tipoExceso, 10) : null;
+      const data = await MaestroServices.getSumasAseguradas(tipoExceso);
+      console.log(data);
+      res.status(200).json(data);
+    } catch (error) { next(error); }
+  }
+
+  async updateSumaAsegurada(req, res, next) {
+    try {
+      const id = parseInt(req.params.id, 10);
+      const { valor } = req.body;
+      const userId = req.userId;
+      const data = await MaestroServices.updateSumaAsegurada(id, valor, userId);
+      res.status(200).json(data);
+    } catch (error) { next(error); }
+  }
+
+  // Basados en la vista VVEH_MARCA_MODELO
   async getMarcas(req, res, next) {
     try {
       const data = await MaestroServices.getMarcas();
@@ -55,7 +97,7 @@ class MaestrosController {
 
   async getModelos(req, res, next) {
     try {
-      const { codMarca } = req.params; // Se recibe por URL
+      const { codMarca } = req.params;
       const data = await MaestroServices.getModelos(codMarca);
       res.status(200).json(data);
     } catch (error) { next(error); }

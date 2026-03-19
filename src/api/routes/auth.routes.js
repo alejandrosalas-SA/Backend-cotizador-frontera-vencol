@@ -9,4 +9,6 @@ router.post('/Login', authValidator.loginValidator, authController.login);
 
 router.post('/ChangePassword', authValidator.changePasswordValidator, authController.changePassword);
 
+router.post('/CreatePassword', authValidator.createPasswordValidator, authController.createPassword);
+
 export default router;
