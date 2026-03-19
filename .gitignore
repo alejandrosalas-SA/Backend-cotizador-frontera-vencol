@@ -6,3 +6,9 @@ dist/
 .env
 logs
 *.log
+
+
+src/database/Base_De_Datos.sql
+src/database/migrations
+dist/
+resources/
