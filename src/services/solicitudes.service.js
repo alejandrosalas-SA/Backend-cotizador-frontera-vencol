@@ -30,14 +30,39 @@ class SolicitudesService {
     };
   }
 
-  // Listar solicitudes (para grid de administración)
-  async getSolicitudes(filtros) {
+  // Listar solicitudes con paginación server-side y filtros JSON.
+  // Sin filtros: pagina en SQL. Con filtros: devuelve todos los coincidentes.
+  async getSolicitudes({ idUsuario = null, filtros = null, pagina = 1, tamanoPagina = 10 } = {}) {
     const pool = await getConnection();
+
+    let filtrosJson = null;
+    if (filtros && typeof filtros === 'object' && Object.keys(filtros).length > 0) {
+      filtrosJson = JSON.stringify(filtros);
+    }
+
     const result = await pool.request()
-      .input('IdUsuario', sql.VarChar(50), filtros.idUsuario ?? null)
+      .input('IdUsuario', sql.VarChar(50), idUsuario)
+      .input('Filtros', sql.NVarChar(sql.MAX), filtrosJson)
+      .input('Pagina', sql.Int, pagina)
+      .input('TamanoPagina', sql.Int, tamanoPagina)
       .execute('COTIZ.SP_ObtenerSolicitudes');
 
-    return result.recordset;
+    // El SP devuelve dos result sets:
+    //   recordsets[0] → filas de solicitudes
+    //   recordsets[1] → una fila con metadata de paginación
+    return {
+      data: result.recordsets[0] ?? [],
+      meta: result.recordsets[1]?.[0] ?? null,
+    };
+  }
+
+  // Conteos por status para el dashboard (total, generadas, borradores)
+  async getConteos(idUsuario = null) {
+    const pool = await getConnection();
+    const result = await pool.request()
+      .input('IdUsuario', sql.VarChar(50), idUsuario)
+      .execute('COTIZ.SP_ContarSolicitudes');
+    return result.recordset[0] ?? { total: 0, generadas: 0, borradores: 0 };
   }
 
   // Obtener detalle completo de una solicitud

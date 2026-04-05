@@ -19,4 +19,13 @@ const updateSumaAseguradaValidator = [
   validateResults
 ];
 
-export default { updateTarifaValidator, updateSumaAseguradaValidator };
+const updateTasaOpcionalValidator = [
+  param('id')
+    .isInt({ min: 1 }).withMessage('El ID debe ser un entero positivo'),
+  body('tasa')
+    .exists().withMessage('El campo tasa es requerido')
+    .isFloat({ min: 0 }).withMessage('La tasa debe ser un número mayor o igual a 0'),
+  validateResults
+];
+
+export default { updateTarifaValidator, updateSumaAseguradaValidator, updateTasaOpcionalValidator };

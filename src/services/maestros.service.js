@@ -129,6 +129,13 @@ class MaestrosService {
     }
   }
 
+  // Tabla: COTIZ.VERSIONES — versión activa más reciente
+  async getVersionActual() {
+    const pool = await getConnection();
+    const result = await pool.request().execute('COTIZ.sp_GetVersionActual');
+    return result.recordset[0] || null;
+  }
+
   // Vista: [COTIZ].[VVEH_MARCA_MODELO]
   async getMarcas() {
     const pool = await getConnection();

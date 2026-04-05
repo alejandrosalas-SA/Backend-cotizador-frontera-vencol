@@ -5,7 +5,7 @@ class CotizacionService {
     async calcularCotizacion(vehiculoData, nroVersion = null) {
         const pool = await getConnection();
         const jsonVehiculo = JSON.stringify(vehiculoData);
-
+        console.log(jsonVehiculo);
         const result = await pool.request()
             .input('JsonVehiculo', sql.NVarChar(sql.MAX), jsonVehiculo)
             .input('NroVersionBuscada', sql.VarChar(sql.MAX), nroVersion)

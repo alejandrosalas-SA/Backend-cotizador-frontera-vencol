@@ -18,6 +18,23 @@ class TarifasController {
       res.status(200).json(data);
     } catch (error) { next(error); }
   }
+
+  async getTasasOpcionales(req, res, next) {
+    try {
+      const data = await TarifasService.getTasasOpcionales();
+      res.status(200).json(data);
+    } catch (error) { next(error); }
+  }
+
+  async updateTasaOpcional(req, res, next) {
+    try {
+      const id = parseInt(req.params.id, 10);
+      const { tasa } = req.body;
+      const userId = req.userId;
+      const data = await TarifasService.updateTasaOpcional(id, tasa, userId);
+      res.status(200).json(data);
+    } catch (error) { next(error); }
+  }
 }
 
 export default new TarifasController();

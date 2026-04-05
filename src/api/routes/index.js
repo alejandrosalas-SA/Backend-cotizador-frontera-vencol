@@ -5,6 +5,7 @@ import coberturasRoutes from './coberturas.routes.js';
 import solicitudesRoutes from './solicitudes.routes.js';
 import cotizacionRoutes from './cotizacion.routes.js';
 import tarifasRoutes from './tarifas.routes.js';
+import estadisticasRoutes from './estadisticas.routes.js';
 
 const router = Router();
 
@@ -15,5 +16,6 @@ router.use('/Coberturas', coberturasRoutes); // Para cotizaciones
 router.use('/Solicitudes', solicitudesRoutes); // Para manejar cotizaciones/emisiones
 router.use('/Cotizacion', cotizacionRoutes); // Para calculo dinamico
 router.use('/Tarifas', tarifasRoutes);     // Admin: gestión de primas y tarifas
+router.use('/Estadisticas', estadisticasRoutes); // Admin: estadísticas del dashboard
 
 export default router;

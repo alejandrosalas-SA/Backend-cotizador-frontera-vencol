@@ -18,6 +18,8 @@ router.get('/RolesUsuarios', MaestrosController.getRolesUsuarios);
 router.get('/SumasAseguradas', MaestrosController.getSumasAseguradas);
 router.get('/SumasAseguradas/:tipoExceso', MaestrosController.getSumasAseguradas);
 
+router.get('/VersionActual', MaestrosController.getVersionActual);
+
 // Vehículos (via Vista COTIZ.VVEH_MARCA_MODELO)
 router.get('/Marcas', MaestrosController.getMarcas);
 router.get('/Modelos/:codMarca', MaestrosController.getModelos);

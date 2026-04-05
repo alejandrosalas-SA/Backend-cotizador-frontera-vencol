@@ -7,6 +7,9 @@ const router = Router();
 // POST /api/Solicitudes/Crear - Guarda la solicitud completa
 router.post('/Crear', verifyToken, SolicitudesController.crear);
 
+// GET /api/Solicitudes/conteos - Conteos por status (para dashboard)
+router.get('/conteos', verifyToken, SolicitudesController.conteos);
+
 // GET /api/Solicitudes - Lista solicitudes (propias o todas si admin)
 router.get('/', verifyToken, SolicitudesController.listar);
 

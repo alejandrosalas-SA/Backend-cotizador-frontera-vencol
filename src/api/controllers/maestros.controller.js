@@ -87,6 +87,13 @@ class MaestrosController {
     } catch (error) { next(error); }
   }
 
+  async getVersionActual(req, res, next) {
+    try {
+      const data = await MaestroServices.getVersionActual();
+      res.status(200).json(data);
+    } catch (error) { next(error); }
+  }
+
   // Basados en la vista VVEH_MARCA_MODELO
   async getMarcas(req, res, next) {
     try {
