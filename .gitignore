@@ -6,8 +6,8 @@ dist/
 .env
 logs
 *.log
-
-
+CLAUDE.md
+/.claude
 src/database/Base_De_Datos.sql
 src/database/migrations
 dist/

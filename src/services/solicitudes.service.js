@@ -30,9 +30,10 @@ class SolicitudesService {
     };
   }
 
-  // Listar solicitudes con paginación server-side y filtros JSON.
-  // Sin filtros: pagina en SQL. Con filtros: devuelve todos los coincidentes.
-  async getSolicitudes({ idUsuario = null, filtros = null, pagina = 1, tamanoPagina = 10 } = {}) {
+  // Listar solicitudes con paginación server-side y filtros.
+  // sucursalesJson: JSON array de IDs de sucursales para filtrar (supervisor/admin).
+  //   null = sin filtro por sucursal (empleado usa idUsuario; admin ve todo).
+  async getSolicitudes({ idUsuario = null, filtros = null, pagina = 1, tamanoPagina = 10, sucursalesJson = null } = {}) {
     const pool = await getConnection();
 
     let filtrosJson = null;
@@ -45,22 +46,22 @@ class SolicitudesService {
       .input('Filtros', sql.NVarChar(sql.MAX), filtrosJson)
       .input('Pagina', sql.Int, pagina)
       .input('TamanoPagina', sql.Int, tamanoPagina)
+      .input('SucursalesJson', sql.NVarChar(sql.MAX), sucursalesJson)
       .execute('COTIZ.SP_ObtenerSolicitudes');
 
-    // El SP devuelve dos result sets:
-    //   recordsets[0] → filas de solicitudes
-    //   recordsets[1] → una fila con metadata de paginación
     return {
       data: result.recordsets[0] ?? [],
       meta: result.recordsets[1]?.[0] ?? null,
     };
   }
 
-  // Conteos por status para el dashboard (total, generadas, borradores)
-  async getConteos(idUsuario = null) {
+  // Conteos por status para el dashboard.
+  // sucursalesJson filtra por sucursales (supervisor/admin); null = sin filtro o por usuario.
+  async getConteos(idUsuario = null, sucursalesJson = null) {
     const pool = await getConnection();
     const result = await pool.request()
       .input('IdUsuario', sql.VarChar(50), idUsuario)
+      .input('SucursalesJson', sql.NVarChar(sql.MAX), sucursalesJson)
       .execute('COTIZ.SP_ContarSolicitudes');
     return result.recordset[0] ?? { total: 0, generadas: 0, borradores: 0 };
   }
@@ -72,7 +73,6 @@ class SolicitudesService {
       .input('IdSolicitud', sql.Int, parseInt(id))
       .execute('COTIZ.SP_ObtenerDetalleSolicitud');
 
-    // El SP retorna 3 recordsets: cabecera, coberturas, opcionales
     const cabecera = result.recordsets[0]?.[0] ?? null;
     const coberturas = result.recordsets[1] ?? [];
     const opcionales = result.recordsets[2] ?? [];
@@ -82,7 +82,7 @@ class SolicitudesService {
     return { ...cabecera, coberturas, opcionales };
   }
 
-  // Actualizar borrador: recibe datos completos + nuevo status
+  // Actualizar borrador
   async actualizarBorrador(id, nuevoStatus, data) {
     const pool = await getConnection();
     console.log(data);
@@ -123,7 +123,7 @@ class SolicitudesService {
     return { mensaje: 'Solicitud eliminada correctamente' };
   }
 
-  // Cambiar estatus (Emitido -> Procesado/Anulado) — mantener para compatibilidad
+  // Cambiar estatus (admin)
   async cambiarStatus(idSolicitud, nuevoStatus, userId) {
     const pool = await getConnection();
     await pool.request()
