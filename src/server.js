@@ -1,6 +1,7 @@
 import app from './app.js';
 import { port, nodeEnv } from './config/index.js';
 import { getConnection } from './database/connection.js';
+import { iniciarJobAlerta, iniciarJobUrgente } from './jobs/alertas.job.js';
 
 async function startServer() {
   try {
@@ -14,6 +15,10 @@ async function startServer() {
     app.listen(port, () => {
       console.log(`🛡️  Servidor Seguro corriendo en puerto: ${port} 🛡️`);
       console.log(`🔧 Ambiente: ${nodeEnv}`);
+
+      // Iniciar jobs de alertas por email
+      iniciarJobAlerta();
+      iniciarJobUrgente();
     });
 
   } catch (error) {
