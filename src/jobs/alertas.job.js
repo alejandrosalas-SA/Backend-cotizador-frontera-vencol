@@ -18,24 +18,25 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import alertasService from '../services/alertas.service.js';
-import { renderAlerta, asuntoAlerta } from '../emails/plantilla-alerta.js';
-import { renderUrgente, asuntoUrgente } from '../emails/plantilla-urgente.js';
+import { renderAlerta, asuntoAlerta } from '../emails/plantilla-alerta.jsx';
+import { renderUrgente, asuntoUrgente } from '../emails/plantilla-urgente.jsx';
 import { emailConfig } from '../config/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname  = path.dirname(__filename);
-const assetsDir  = path.resolve(__dirname, '../../assets');
+const __dirname = path.dirname(__filename);
+// Carpeta única de imágenes: emails/static (usada también por react-email dev)
+const staticDir = path.resolve(__dirname, '../../emails/static');
 
 // ─── Attachments (imágenes embebidas por CID) ────────────────────────────────
 const attachmentsBase = [
   {
     filename: 'logo.png',
-    path: path.join(assetsDir, 'Logos-Seguros-Altamira', 'icono-cotizador.png'),
+    path: path.join(staticDir, 'icono-cotizador.png'),
     cid: 'logo-cotizador',
   },
   {
     filename: 'footer.png',
-    path: path.join(assetsDir, 'imagen-principal-cotizacion-transporte-binacional.png'),
+    path: path.join(staticDir, 'footer.png'),
     cid: 'footer-img',
   },
 ];
@@ -44,7 +45,7 @@ const attachmentsAlerta = [
   ...attachmentsBase,
   {
     filename: 'operadora.png',
-    path: path.join(assetsDir, 'templates', 'operadora.png'),
+    path: path.join(staticDir, 'operadora.png'),
     cid: 'operadora',
   },
 ];
@@ -53,7 +54,7 @@ const attachmentsUrgente = [
   ...attachmentsBase,
   {
     filename: 'alerta.png',
-    path: path.join(assetsDir, 'templates', 'alerta.png'),
+    path: path.join(staticDir, 'alerta.png'),
     cid: 'alerta-img',
   },
 ];
@@ -63,9 +64,10 @@ const attachmentsUrgente = [
 /** Crea un transporter de nodemailer con la config del .env */
 function crearTransporter() {
   return nodemailer.createTransport({
-    host:   emailConfig.host,
-    port:   emailConfig.port,
+    host: emailConfig.host,
+    port: emailConfig.port,
     secure: emailConfig.secure,
+    family: 4,
     auth: {
       user: emailConfig.auth.user,
       pass: emailConfig.auth.pass,
@@ -83,19 +85,19 @@ function agruparPorEmpleado(rows) {
     if (!mapa.has(row.cod_emp)) {
       mapa.set(row.cod_emp, {
         empleado: {
-          cod_emp:         row.cod_emp,
-          email:           row.email,
+          cod_emp: row.cod_emp,
+          email: row.email,
           nombre_empleado: row.nombre_empleado,
         },
         solicitudes: [],
       });
     }
     mapa.get(row.cod_emp).solicitudes.push({
-      id_solicitud:        row.id_solicitud,
-      fecha_emision:       row.fecha_emision,
-      dias_transcurridos:  row.dias_transcurridos,
-      solicitante_nombre:  row.solicitante_nombre,
-      vehiculo_placa:      row.vehiculo_placa,
+      id_solicitud: row.id_solicitud,
+      fecha_emision: row.fecha_emision,
+      dias_transcurridos: row.dias_transcurridos,
+      solicitante_nombre: row.solicitante_nombre,
+      vehiculo_placa: row.vehiculo_placa,
     });
   }
   return [...mapa.values()];
@@ -129,9 +131,9 @@ export async function ejecutarAlertaBorradores() {
       try {
         const html = await renderAlerta({ empleado, solicitudes });
         await transporter.sendMail({
-          from:        emailConfig.from,
-          to:          empleado.email,
-          subject:     asuntoAlerta,
+          from: emailConfig.from,
+          to: empleado.email,
+          subject: asuntoAlerta,
           html,
           attachments: attachmentsAlerta,
         });
@@ -157,10 +159,10 @@ export async function ejecutarAlertaUrgente() {
   console.log('[alertas-urgente] Iniciando job: expirar 15d + alerta urgente 12d...');
   try {
     // 1. Expirar borradores vencidos (15+ días)
-    const { solicitudes_expiradas } = await alertasService.expirarBorradoresVencidos();
-    if (solicitudes_expiradas > 0) {
+    //const { solicitudes_expiradas } = await alertasService.expirarBorradoresVencidos();
+    /*if (solicitudes_expiradas > 0) {
       console.log(`[alertas-urgente] ${solicitudes_expiradas} borrador(es) expirado(s) → status=3`);
-    }
+    }*/
 
     // 2. Alertas urgentes (12+ días, los de 15+ ya fueron expirados)
     const rows = await alertasService.getBorradoresPorEmpleado(12);
@@ -182,9 +184,9 @@ export async function ejecutarAlertaUrgente() {
       try {
         const html = await renderUrgente({ empleado, solicitudes });
         await transporter.sendMail({
-          from:        emailConfig.from,
-          to:          empleado.email,
-          subject:     asuntoUrgente,
+          from: emailConfig.from,
+          to: empleado.email,
+          subject: asuntoUrgente,
           html,
           attachments: attachmentsUrgente,
         });

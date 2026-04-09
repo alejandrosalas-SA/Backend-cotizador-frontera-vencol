@@ -7,7 +7,7 @@ class AlertasService {
    * Cada fila incluye: cod_emp, email, nombre_empleado, id_solicitud,
    * fecha_emision, dias_transcurridos, solicitante_nombre, vehiculo_placa.
    */
-  async getBorradoresPorEmpleado(diasMinimos = 7) {
+  async getBorradoresPorEmpleado(diasMinimos) {
     const pool = await getConnection();
     const result = await pool.request()
       .input('DiasMinimos', sql.Int, diasMinimos)

@@ -8,10 +8,13 @@ import routes from './api/routes/index.js';
 
 const app = express();
 
-// 1. SEGURIDAD: Helmet (Protección de cabeceras HTTP)
+// 1. CORS — primero para que los preflight OPTIONS reciban headers antes que cualquier otro middleware
+app.use(cors({ origin: '*' }));
+
+// 2. SEGURIDAD: Helmet (Protección de cabeceras HTTP)
 app.use(helmet());
 
-// 2. SEGURIDAD: Rate Limiting (Protección contra fuerza bruta/DDoS)
+// 3. SEGURIDAD: Rate Limiting (Protección contra fuerza bruta/DDoS)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 1000, // Límite de 1000 peticiones por IP
@@ -19,13 +22,7 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// 3. Middlewares Estándar
-
-app.use(cors({
-  origin: '*',
-  credentials: true
-}));
-
+// 4. Middlewares Estándar
 app.use(json({ limit: '10kb' })); // Limitar tamaño del body para evitar DoS
 app.use(morgan('dev')); // Logging
 
@@ -37,7 +34,7 @@ app.use((req, res, next) => {
   res.status(404).json({ error: 'Recurso no encontrado' });
 });
 
-// 4. Manejo de Errores Centralizado (No revelar Stack Trace en Producción)
+// 5. Manejo de Errores Centralizado (No revelar Stack Trace en Producción)
 app.use((err, req, res, next) => {
   console.error(err.stack); // Log interno siempre
 

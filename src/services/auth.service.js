@@ -97,7 +97,7 @@ class AuthService {
 
     const user = checkUser.recordset[0];
     if (user.password) {
-      const error = new Error('USER_ALREADY_HAS_PASSWORD');
+      const error = new Error('El usuario ya tiene contraseña.');
       error.status = 400;
       throw error;
     }
